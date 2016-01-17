@@ -1,4 +1,4 @@
-function Ship(size, pos, angle, tr, tf){
+function Ship(size, pos, angle, tr, tf, pos_lim){
     this.radius = size/2;
     this.pos = pos;
     this.angle = angle;
@@ -9,6 +9,7 @@ function Ship(size, pos, angle, tr, tf){
     this.shipAngle = Math.PI/4; //angle from center of ship to its side fins
     this.turnRate = tr;
     this.thrustForce = tf; //how much we can accelerate
+    this.pos_limit = pos_lim;
 }
 
 Ship.prototype.thrust = function()
@@ -19,7 +20,7 @@ Ship.prototype.thrust = function()
     t[0] = Math.cos(this.angle);
     t[1] = Math.sin(this.angle);
 
-    this.velocity = vec2.add(this.velocity,t);
+    this.velocity = vec2.add(this.velocity,vec2.scale(t,this.thrustForce));
 
     //impose some limits here or whatever
 };
@@ -39,10 +40,23 @@ Ship.prototype.turnRight = function()
     this.turn(this.turnRate);
 };
 
+//logic stuff that's checked every frame
 Ship.prototype.update = function(dt)
 {
     this.pos = vec2.add(this.pos,vec2.scale(this.velocity,dt));
-}
+
+    if (this.pos[0] > this.pos_limit[0]) {
+        this.pos[0] = 0;
+    } else if (this.pos[0] < 0){
+        this.pos[0] = this.pos_limit[0];
+    }
+
+    if (this.pos[1] > this.pos_limit[1]){
+        this.pos[1] = 0;
+    } else if (this.pos[1] < 0) {
+        this.pos[1] = this.pos_limit[1];
+    }
+};
 
 Ship.prototype.getMesh = function()   //return set of 2d coords to draw
 {

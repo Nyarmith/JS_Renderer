@@ -1,39 +1,45 @@
 var canvas = document.getElementById("myCanvas");
 
-myRenderer = new Renderer(canvas.getContext("2d"));
+myRenderer = new Renderer(canvas.getContext("2d"), canvas.width, canvas.height);
 
 //use request animation frame to save time when tabbed away from scene
 var requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame || function(c) {window.setTimeout(c,15);};
 
-myShip = Ship.create();
+myShip = new Ship(10, [canvas.width/2, canvas.height/2], 0, 10*Math.PI/180, 0.025, [canvas.width, canvas.height]);
 
 //polling inputs done with document event listener
 document.addEventListener('keydown',
         function(e){
-            switch(e.keycode){
+            switch(e.keyCode){
                 case 83:    //"S"
                     myShip.shoot();
                     break;
                 case 38:    //UP
                     myShip.thrust();
                     break;
-                case 39:    //LEFT
+                case 37:    //LEFT
                     myShip.turnLeft();
                     break;
-                case 37:    //RIGHT
+                case 39:    //RIGHT
                     myShip.turnRight();
                     break;
             }
         },false);
 
+date = new Date().getTime();
+
 function Animate(){
     //do logic
     OldDate = date;
-    date = new Date();
-    myShip.update(dt);
+    date = new Date().getTime();
+    myShip.update(date-OldDate);
 
-    myRenderer.fillRender(myShip.getMesh());
+    myRenderer.clear();
+    myRenderer.fillRender(myShip.getMesh(), "blue", "blue");
 
     //requestAnimFrame with this method
     requestAnimFrame(Animate);
 }
+
+//start game
+Animate();

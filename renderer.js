@@ -6,9 +6,16 @@
  */
 
 if (typeof Renderer == "undefined" || !Renderer) {
-    function Renderer(context){
-    this.ctx = context;}
+    function Renderer(context, w, h){
+    this.width = w;
+    this.height = h;
+    this.ctx = context;
+    }
 }
+
+Renderer.prototype.clear = function(){
+    this.ctx.clearRect(0, 0, this.width, this.height);
+};
 
 Renderer.prototype.drawShape = function(coordinates, strokestyle){
     if (typeof strokestype == "undefined"){
@@ -27,7 +34,7 @@ Renderer.prototype.drawShape = function(coordinates, strokestyle){
 
     this.ctx.closePath();
     this.ctx.stroke();
-}
+};
 
 Renderer.prototype.fillShape = function(coordinates, strokestyle, fillstyle){
     if (typeof strokestype == "undefined"){
@@ -48,5 +55,5 @@ Renderer.prototype.fillShape = function(coordinates, strokestyle, fillstyle){
     this.ctx.closePath();
     this.ctx.stroke();
     this.ctx.fill();
-}
+};
 

@@ -66,11 +66,15 @@ vec2.normalize = function(a){
 
 if (typeof Renderer == "undefined" || !Renderer) {
     function Renderer(context, w, h){
-        this.width  = w;
-        this.height = h;
-        this.ctx = context;
+    this.width = w;
+    this.height = h;
+    this.ctx = context;
     }
 }
+
+Renderer.prototype.clear = function(){
+    this.ctx.clearRect(0, 0, this.width, this.height);
+};
 
 Renderer.prototype.drawShape = function(coordinates, strokestyle){
     if (typeof strokestype == "undefined"){
@@ -84,12 +88,12 @@ Renderer.prototype.drawShape = function(coordinates, strokestyle){
 
     for (var i = 1; i < coordinates.length; i++)
     {
-       this.ctx.lineTo(coordinates[i][0],coordinates[i][1]);
+        this.ctx.lineTo(coordinates[i][0],coordinates[i][1]);
     }
 
     this.ctx.closePath();
     this.ctx.stroke();
-}
+};
 
 Renderer.prototype.fillShape = function(coordinates, strokestyle, fillstyle){
     if (typeof strokestype == "undefined"){
@@ -110,11 +114,7 @@ Renderer.prototype.fillShape = function(coordinates, strokestyle, fillstyle){
     this.ctx.closePath();
     this.ctx.stroke();
     this.ctx.fill();
-}
-
-Renderer.prototype.clear = function(){
-    this.ctx.clearRect(0, 0, this.width, this.height);
-}
+};
 
 function Ship(size, pos, angle, tr, tf, pos_lim){
     this.radius = size/2;
@@ -138,7 +138,7 @@ Ship.prototype.thrust = function()
     t[0] = Math.cos(this.angle);
     t[1] = Math.sin(this.angle);
 
-    this.velocity = vec2.add(this.velocity,vec2.scale(t, this.thrustForce));
+    this.velocity = vec2.add(this.velocity,vec2.scale(t,this.thrustForce));
 
     //impose some limits here or whatever
 };
@@ -162,6 +162,7 @@ Ship.prototype.turnRight = function()
 Ship.prototype.update = function(dt)
 {
     this.pos = vec2.add(this.pos,vec2.scale(this.velocity,dt));
+
     if (this.pos[0] > this.pos_limit[0]) {
         this.pos[0] = 0;
     } else if (this.pos[0] < 0){
@@ -211,9 +212,8 @@ var requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnima
 
 myShip = new Ship(10, [canvas.width/2, canvas.height/2], 0, 10*Math.PI/180, 0.025, [canvas.width, canvas.height]);
 
-//window.onload = function(){
 //polling inputs done with document event listener
-document.body.addEventListener("keydown",
+document.addEventListener('keydown',
         function(e){
             switch(e.keyCode){
                 case 83:    //"S"
@@ -229,24 +229,22 @@ document.body.addEventListener("keydown",
                     myShip.turnRight();
                     break;
             }
-        }, true);
-//}
+        },false);
 
 date = new Date().getTime();
 
 function Animate(){
     //do logic
-    var OldDate = date;
+    OldDate = date;
     date = new Date().getTime();
-    //for (var i=0; i<entity_list.size(); i++)
-    //      entity_list(i).update(date-OldDate);
     myShip.update(date-OldDate);
 
     myRenderer.clear();
-    myRenderer.fillShape(myShip.getMesh(), "blue", "blue");
+    myRenderer.fillRender(myShip.getMesh(), "blue", "blue");
 
     //requestAnimFrame with this method
     requestAnimFrame(Animate);
 }
 
+//start game
 Animate();
