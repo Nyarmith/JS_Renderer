@@ -240,7 +240,7 @@ function Animate(){
     myShip.update(date-OldDate);
 
     myRenderer.clear();
-    myRenderer.fillRender(myShip.getMesh(), "blue", "blue");
+    myRenderer.fillShape(myShip.getMesh(), "blue", "blue");
 
     //requestAnimFrame with this method
     requestAnimFrame(Animate);
